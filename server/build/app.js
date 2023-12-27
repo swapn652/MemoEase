@@ -178,6 +178,7 @@ app.get("/fetchNotes", extractUserId, (req, res) => __awaiter(void 0, void 0, vo
         res.status(500).json({ error: "Internal Server Error" });
     }
 }));
+// route to edit a particular note
 app.patch("/editNote/:id", extractUserId, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.userId;
     const noteId = req.params.id;
@@ -211,6 +212,35 @@ app.patch("/editNote/:id", extractUserId, (req, res) => __awaiter(void 0, void 0
     catch (error) {
         console.error('Error editing note:', error);
         res.status(500).json({ error: 'Internal Server Error' });
+    }
+}));
+//route to delete a particular note
+app.delete("/deleteNote/:id", extractUserId, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.userId;
+    const noteId = req.params.id;
+    try {
+        const existingNote = yield prisma.note.findUnique({
+            where: {
+                id: noteId
+            },
+            select: {
+                userId: true
+            }
+        });
+        if (!existingNote || existingNote.userId !== userId) {
+            res.status(404).json({ error: "Note not found or unauthorised" });
+            return;
+        }
+        yield prisma.note.delete({
+            where: {
+                id: noteId
+            }
+        });
+        res.json({ success: true, message: "note deleted successfully" });
+    }
+    catch (error) {
+        console.log("Error encountered: ", error);
+        res.status(500).json({ error: "Internal Server Error" });
     }
 }));
 app.listen(PORT, () => {

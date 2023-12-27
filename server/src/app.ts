@@ -190,6 +190,8 @@ app.get("/fetchNotes", extractUserId, async(req: Request, res: Response): Promis
   }
 });
 
+
+// route to edit a particular note
 app.patch("/editNote/:id", extractUserId, async (req: Request, res: Response): Promise<void> => {
   const userId = req.userId;
   const noteId = req.params.id;
@@ -226,6 +228,39 @@ app.patch("/editNote/:id", extractUserId, async (req: Request, res: Response): P
   } catch (error) {
     console.error('Error editing note:', error);
     res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+//route to delete a particular note
+app.delete("/deleteNote/:id", extractUserId, async(req: Request, res: Response): Promise<void> => {
+  const userId = req.userId;
+  const noteId = req.params.id;
+
+  try {
+    const existingNote = await prisma.note.findUnique({
+      where: {
+        id: noteId
+      },
+      select: {
+        userId: true
+      }
+    });
+
+    if(!existingNote || existingNote.userId !== userId){
+      res.status(404).json({ error: "Note not found or unauthorised" });
+      return;
+    }
+
+    await prisma.note.delete({
+      where:{
+        id: noteId
+      }
+    });
+
+    res.json({ success: true, message: "note deleted successfully" });
+  } catch (error) {
+    console.log("Error encountered: ", error);
+    res.status(500).json({ error: "Internal Server Error" })
   }
 });
 
