@@ -28,6 +28,7 @@ app.use(express_1.default.json());
 app.get("/", (req, res) => {
     res.send("hello world");
 });
+//ALL USER RELATED ROUTES
 app.post("/register", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { username, email, password } = req.body;
     try {
@@ -97,6 +98,77 @@ app.get("/getUsers", (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
     catch (err) {
         console.error("Error during registration:", err);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+}));
+//ALL NOTES RELATED ROUTES
+const extractUserId = (req, res, next) => {
+    var _a;
+    const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(' ')[1];
+    if (token) {
+        try {
+            const decoded = jsonwebtoken_1.default.verify(token, SECRET_KEY);
+            if (typeof decoded === 'string') {
+                // In case the token is valid but only contains a string (not a JwtPayload)
+                req.userId = decoded;
+            }
+            else {
+                // If the token is a JwtPayload, extract the user ID
+                req.userId = decoded.id;
+            }
+        }
+        catch (err) {
+            // Ignore errors, don't reject the request
+        }
+    }
+    next();
+};
+app.post("/addNote", extractUserId, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { title, description } = req.body;
+    const userId = req.userId;
+    try {
+        if (!userId) {
+            res.status(401).json({ error: "Unauthorised" });
+            return;
+        }
+        const newNote = yield prisma.note.create({
+            data: {
+                title,
+                description,
+                userId
+            }
+        });
+        res.json(newNote);
+    }
+    catch (err) {
+        console.log("New err encountered: ", err);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+}));
+app.get("/fetchNotes", extractUserId, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.userId;
+    try {
+        if (!userId) {
+            res.status(401).json({ error: "Unauthorised" });
+            return;
+        }
+        const userWithNotes = yield prisma.user.findUnique({
+            where: {
+                id: userId
+            },
+            include: {
+                notes: true
+            }
+        });
+        if (!userWithNotes) {
+            res.status(404).json({ error: "User not found" });
+            return;
+        }
+        const notes = userWithNotes.notes;
+        res.status(200).json({ notes });
+    }
+    catch (error) {
+        console.log("New error encountered: ", error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 }));
