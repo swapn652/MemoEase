@@ -190,6 +190,45 @@ app.get("/fetchNotes", extractUserId, async(req: Request, res: Response): Promis
   }
 });
 
+app.patch("/editNote/:id", extractUserId, async (req: Request, res: Response): Promise<void> => {
+  const userId = req.userId;
+  const noteId = req.params.id;
+  const { title, description }: { title: string; description: string } = req.body;
+
+  try {
+    // Check if the note exists and belongs to the user
+    const existingNote = await prisma.note.findUnique({
+      where: {
+        id: noteId,
+      },
+      select: {
+        userId: true,
+      },
+    });
+
+    if (!existingNote || existingNote.userId !== userId) {
+      res.status(404).json({ error: 'Note not found or unauthorized' });
+      return;
+    }
+
+    // Update the note
+    const updatedNote = await prisma.note.update({
+      where: {
+        id: noteId,
+      },
+      data: {
+        title,
+        description,
+      },
+    });
+
+    res.json(updatedNote);
+  } catch (error) {
+    console.error('Error editing note:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 app.listen(PORT, (): void => {
     console.log(`Server is up and running on PORT: ${PORT}`);
 });

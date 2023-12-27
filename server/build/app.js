@@ -178,6 +178,41 @@ app.get("/fetchNotes", extractUserId, (req, res) => __awaiter(void 0, void 0, vo
         res.status(500).json({ error: "Internal Server Error" });
     }
 }));
+app.patch("/editNote/:id", extractUserId, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.userId;
+    const noteId = req.params.id;
+    const { title, description } = req.body;
+    try {
+        // Check if the note exists and belongs to the user
+        const existingNote = yield prisma.note.findUnique({
+            where: {
+                id: noteId,
+            },
+            select: {
+                userId: true,
+            },
+        });
+        if (!existingNote || existingNote.userId !== userId) {
+            res.status(404).json({ error: 'Note not found or unauthorized' });
+            return;
+        }
+        // Update the note
+        const updatedNote = yield prisma.note.update({
+            where: {
+                id: noteId,
+            },
+            data: {
+                title,
+                description,
+            },
+        });
+        res.json(updatedNote);
+    }
+    catch (error) {
+        console.error('Error editing note:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}));
 app.listen(PORT, () => {
     console.log(`Server is up and running on PORT: ${PORT}`);
 });
