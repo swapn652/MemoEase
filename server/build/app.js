@@ -65,6 +65,31 @@ app.post('/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }));
+// Route to get user information based on the JWT token
+app.get('/getCurrentLoggedInUser', (req, res) => {
+    var _a;
+    const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(' ')[1];
+    // Authorization: 'Bearer TOKEN'
+    if (!token) {
+        res.status(200).json({ success: false, message: 'Error! Token was not provided.' });
+        return;
+    }
+    try {
+        // Decoding the token
+        const decodedToken = jsonwebtoken_1.default.verify(token, SECRET_KEY);
+        res.status(200).json({
+            success: true,
+            data: {
+                id: decodedToken.id,
+                username: decodedToken.username,
+                email: decodedToken.email,
+            },
+        });
+    }
+    catch (error) {
+        res.status(200).json({ success: false, message: 'Invalid token.' });
+    }
+});
 app.get("/getUsers", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const allUsers = yield prisma.user.findMany();

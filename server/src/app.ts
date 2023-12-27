@@ -1,7 +1,7 @@
 import express, {Application, Request, Response} from 'express';
 const { PrismaClient } = require("@prisma/client")
 const bcrypt = require('bcrypt');
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 const crypto = require('crypto');
 
 const generateSecretKey = () => {
@@ -63,7 +63,34 @@ app.post('/login', async (req: Request, res: Response): Promise<void> => {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   });
-
+  
+  // Route to get user information based on the JWT token
+  app.get('/getCurrentLoggedInUser', (req: Request, res: Response): void => {
+    const token = req.headers.authorization?.split(' ')[1];
+  
+    // Authorization: 'Bearer TOKEN'
+    if (!token) {
+      res.status(200).json({ success: false, message: 'Error! Token was not provided.' });
+      return;
+    }
+  
+    try {
+      // Decoding the token
+      const decodedToken = jwt.verify(token, SECRET_KEY) as { id: string; username: string, email: string };
+  
+      res.status(200).json({
+        success: true,
+        data: {
+          id: decodedToken.id,
+          username: decodedToken.username,
+          email: decodedToken.email,
+        },
+      });
+    } catch (error) {
+      res.status(200).json({ success: false, message: 'Invalid token.' });
+    }
+  });
+  
   
 
 app.get("/getUsers", async (req: Request, res: Response): Promise<void> => {

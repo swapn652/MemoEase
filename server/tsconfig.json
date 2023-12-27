@@ -7,6 +7,7 @@
     "strict": true,
     "skipLibCheck": true,
     "outDir": "./build",  // Use "./build" for clarity
+    "types": ["node", "express", "./custom.d.ts"]
   },
   "include": ["src/**/*"]
 }
