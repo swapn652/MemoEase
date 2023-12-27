@@ -23,6 +23,7 @@ app.get("/", (req: Request, res: Response): void => {
 
 //ALL USER RELATED ROUTES
 
+//route to register a new user
 app.post("/register", async (req: Request, res: Response): Promise<void> => {
     const { username, email, password }: { username: string; email: string; password: string } = req.body;
 
@@ -45,6 +46,8 @@ app.post("/register", async (req: Request, res: Response): Promise<void> => {
     }
 });
 
+
+//route to login
 app.post('/login', async (req: Request, res: Response): Promise<void> => {
     const { username, password }: { username: string; password: string } = req.body;
   
@@ -67,33 +70,34 @@ app.post('/login', async (req: Request, res: Response): Promise<void> => {
     }
   });
   
-  // Route to get user information based on the JWT token
-  app.get('/getCurrentLoggedInUser', (req: Request, res: Response): void => {
-    const token = req.headers.authorization?.split(' ')[1];
+  // Route to get user information based on the JWT token for the currently logged in user
+app.get('/getCurrentLoggedInUser', (req: Request, res: Response): void => {
+  const token = req.headers.authorization?.split(' ')[1];
+
+  // Authorization: 'Bearer TOKEN'
+  if (!token) {
+    res.status(200).json({ success: false, message: 'Error! Token was not provided.' });
+    return;
+  }
+
+  try {
+    // Decoding the token
+    const decodedToken = jwt.verify(token, SECRET_KEY) as { id: string; username: string, email: string };
+
+    res.status(200).json({
+      success: true,
+      data: {
+        id: decodedToken.id,
+        username: decodedToken.username,
+        email: decodedToken.email,
+      },
+    });
+  } catch (error) {
+    res.status(200).json({ success: false, message: 'Invalid token.' });
+  }
+});
   
-    // Authorization: 'Bearer TOKEN'
-    if (!token) {
-      res.status(200).json({ success: false, message: 'Error! Token was not provided.' });
-      return;
-    }
-  
-    try {
-      // Decoding the token
-      const decodedToken = jwt.verify(token, SECRET_KEY) as { id: string; username: string, email: string };
-  
-      res.status(200).json({
-        success: true,
-        data: {
-          id: decodedToken.id,
-          username: decodedToken.username,
-          email: decodedToken.email,
-        },
-      });
-    } catch (error) {
-      res.status(200).json({ success: false, message: 'Invalid token.' });
-    }
-  });
-  
+//route to fetch all the users
 app.get("/getUsers", async (req: Request, res: Response): Promise<void> => {
     try{
         const allUsers = await prisma.user.findMany();
@@ -106,6 +110,7 @@ app.get("/getUsers", async (req: Request, res: Response): Promise<void> => {
 
 //ALL NOTES RELATED ROUTES
 
+//middleware to fetch the id of user from JWT token
 const extractUserId = (req: Request, res: Response, next: Function): void => {
   const token = req.headers.authorization?.split(' ')[1];
 
@@ -128,6 +133,7 @@ const extractUserId = (req: Request, res: Response, next: Function): void => {
   next();
 };
 
+//route to add a new note to the database for the currently logged in user
 app.post("/addNote", extractUserId, async (req: Request, res: Response): Promise<void> => {
   const {title, description} : {title: string, description: string} = req.body;
   const userId = req.userId;
@@ -153,6 +159,7 @@ app.post("/addNote", extractUserId, async (req: Request, res: Response): Promise
   }
 });
 
+//route to fetch the notes for currently logged in user
 app.get("/fetchNotes", extractUserId, async(req: Request, res: Response): Promise<void> => {
   const userId = req.userId;
   try {

@@ -29,6 +29,7 @@ app.get("/", (req, res) => {
     res.send("hello world");
 });
 //ALL USER RELATED ROUTES
+//route to register a new user
 app.post("/register", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { username, email, password } = req.body;
     try {
@@ -48,6 +49,7 @@ app.post("/register", (req, res) => __awaiter(void 0, void 0, void 0, function* 
         res.status(500).json({ error: "Internal Server Error" });
     }
 }));
+//route to login
 app.post('/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { username, password } = req.body;
     try {
@@ -66,7 +68,7 @@ app.post('/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }));
-// Route to get user information based on the JWT token
+// Route to get user information based on the JWT token for the currently logged in user
 app.get('/getCurrentLoggedInUser', (req, res) => {
     var _a;
     const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(' ')[1];
@@ -91,6 +93,7 @@ app.get('/getCurrentLoggedInUser', (req, res) => {
         res.status(200).json({ success: false, message: 'Invalid token.' });
     }
 });
+//route to fetch all the users
 app.get("/getUsers", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const allUsers = yield prisma.user.findMany();
@@ -102,6 +105,7 @@ app.get("/getUsers", (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 }));
 //ALL NOTES RELATED ROUTES
+//middleware to fetch the id of user from JWT token
 const extractUserId = (req, res, next) => {
     var _a;
     const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(' ')[1];
@@ -123,6 +127,7 @@ const extractUserId = (req, res, next) => {
     }
     next();
 };
+//route to add a new note to the database for the currently logged in user
 app.post("/addNote", extractUserId, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { title, description } = req.body;
     const userId = req.userId;
@@ -145,6 +150,7 @@ app.post("/addNote", extractUserId, (req, res) => __awaiter(void 0, void 0, void
         res.status(500).json({ error: "Internal Server Error" });
     }
 }));
+//route to fetch the notes for currently logged in user
 app.get("/fetchNotes", extractUserId, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.userId;
     try {
