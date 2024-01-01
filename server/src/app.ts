@@ -3,6 +3,7 @@ const { PrismaClient } = require("@prisma/client")
 const bcrypt = require('bcrypt');
 import jwt, { JwtPayload } from 'jsonwebtoken';
 const crypto = require('crypto');
+const cors = require('cors')
 
 const generateSecretKey = () => {
   return crypto.randomBytes(32).toString('hex');
@@ -15,6 +16,7 @@ const PORT: number = 8080;
 const SECRET_KEY = generateSecretKey();
 
 app.use(express.json());
+app.use(cors());
 
 app.get("/", (req: Request, res: Response): void => {
     res.send("hello world");

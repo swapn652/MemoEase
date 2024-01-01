@@ -17,6 +17,7 @@ const { PrismaClient } = require("@prisma/client");
 const bcrypt = require('bcrypt');
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const crypto = require('crypto');
+const cors = require('cors');
 const generateSecretKey = () => {
     return crypto.randomBytes(32).toString('hex');
 };
@@ -25,6 +26,7 @@ const prisma = new PrismaClient();
 const PORT = 8080;
 const SECRET_KEY = generateSecretKey();
 app.use(express_1.default.json());
+app.use(cors());
 app.get("/", (req, res) => {
     res.send("hello world");
 });
