@@ -3,12 +3,15 @@ import React, { useState } from 'react';
 import login from '../hooks/login';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
   const [formData, setFormData] = useState({
     username: "",
     password: ""
   });
+
+  const { token, setToken } = useAuth();
 
   const handleChange = (e: any) => {
     setFormData({
@@ -21,7 +24,8 @@ const Login = () => {
     e.preventDefault();
 
     try {
-        const token = await login(formData);
+        const currToken = await login(formData);
+        setToken(currToken);
         toast.success("Successful login");
     } catch(error: any) {
         toast.error("Failed to login", error);
