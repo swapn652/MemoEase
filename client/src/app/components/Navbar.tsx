@@ -2,7 +2,7 @@ import React from 'react'
 
 export const Navbar = () => {
   return (
-    <div className = "w-full bg-blue-700 text-white h-[6rem] flex flex-row items-center justify-between px-[2rem]">
+    <div className = "w-full bg-blue-700 text-white h-[6rem] flex flex-row items-center justify-between px-[2rem] fixed top-0">
         <h1 className = "text-[2rem]">MemoEase</h1>
         <div className = "flex flex-row gap-x-2 items-center">
             <img src="./user.png" alt="user_icon" className = "w-[2rem] h-[2rem]" />
