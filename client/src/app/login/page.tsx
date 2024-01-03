@@ -1,9 +1,10 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import login from '../hooks/login';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAuth } from '../context/AuthContext';
+// import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -25,7 +26,7 @@ const Login = () => {
 
     try {
         const currToken = await login(formData);
-        setToken(currToken);
+        setToken(currToken.token);
         toast.success("Successful login");
     } catch(error: any) {
         toast.error("Failed to login", error);

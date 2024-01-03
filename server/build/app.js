@@ -60,9 +60,7 @@ app.post('/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             res.status(401).json({ error: 'Invalid username or password' });
         }
         // Create a JWT with user information
-        const token = jsonwebtoken_1.default.sign({ id: user.id, username: user.username, email: user.email }, SECRET_KEY, {
-            expiresIn: '1h',
-        });
+        const token = jsonwebtoken_1.default.sign({ id: user.id, username: user.username, email: user.email }, SECRET_KEY);
         res.json({ token });
     }
     catch (err) {

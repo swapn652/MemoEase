@@ -61,9 +61,7 @@ app.post('/login', async (req: Request, res: Response): Promise<void> => {
       }
   
       // Create a JWT with user information
-      const token = jwt.sign({ id: user.id, username: user.username, email: user.email }, SECRET_KEY, {
-        expiresIn: '1h',
-      });
+      const token = jwt.sign({ id: user.id, username: user.username, email: user.email }, SECRET_KEY);
   
       res.json({ token });
     } catch (err) {
