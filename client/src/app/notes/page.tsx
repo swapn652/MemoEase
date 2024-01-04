@@ -2,10 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import NotesCard from '../components/NotesCard';
 import { useAuth } from '../context/AuthContext';
+import fetchNotes from '../hooks/fetchNotes';
 
 const Notes = () => {
   const { token } = useAuth();
   const [isMounted, setIsMounted] = useState(false);
+  const { notes, loading, error } = fetchNotes();
 
   useEffect(() => {
     setIsMounted(true);
@@ -26,7 +28,15 @@ const Notes = () => {
             </button>
           </div>
           <div className="flex flex-row px-12 flex-wrap gap-10 h-screen w-screen items-center justify-center" style={{ paddingTop: '4rem', paddingBottom: '60rem' }}>
-            {/* Your NotesCard components go here */}
+            {loading ? (
+              <p>Loading...</p>
+            ) : error ? (
+              <p>Error: {error}</p>
+            ) : (
+              notes.map(note => (
+                <NotesCard key = {note.id} title = {note.title} description = {note.description} />
+              ))
+            )}
           </div>
         </>
       ) : (
