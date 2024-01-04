@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import useDeleteNote from '../hooks/useDeleteNote';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import EditNoteModal from './EditNoteModal';
 
 interface NotesCardProps {
   id: string;
@@ -11,6 +12,11 @@ interface NotesCardProps {
 
 const NotesCard: React.FC<NotesCardProps> = ({ id, title, description }) => {
   const { deleteNote } = useDeleteNote();
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+  const handleModal = () => {
+    setIsModalOpen(!isModalOpen);
+  }
 
   const handleDeleteNote = async () => {
     try {
@@ -36,7 +42,7 @@ const NotesCard: React.FC<NotesCardProps> = ({ id, title, description }) => {
       </div>
 
       <div className="h-[3rem] w-[100%] rounded-br-xl rounded-bl-xl bg-blue-700 text-white absolute bottom-0 flex flex-row items-center justify-center gap-x-8">
-        <div className="cursor-pointer">
+        <div className="cursor-pointer" onClick={handleModal}>
           Edit
         </div>
         <div className="cursor-pointer" onClick={handleDeleteNote}>
@@ -45,6 +51,7 @@ const NotesCard: React.FC<NotesCardProps> = ({ id, title, description }) => {
       </div>
 
       <ToastContainer/>
+      {isModalOpen && <EditNoteModal noteId={id} initialTitle={title} initialDescription={description} onClose={handleModal} />}
     </div>
   );
 };
