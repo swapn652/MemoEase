@@ -32,10 +32,14 @@ const Notes = () => {
               <p>Loading...</p>
             ) : error ? (
               <p>Error: {error}</p>
-            ) : (
+            ) : notes.length > 0 ? (
               notes.map(note => (
                 <NotesCard key = {note.id} id = {note.id} title = {note.title} description = {note.description} />
               ))
+            ) : (
+              <div className="flex w-screen h-screen justify-center text-[3rem]">
+                No notes found!!! Add a new note.
+              </div>
             )}
           </div>
         </>
