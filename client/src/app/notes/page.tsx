@@ -10,6 +10,8 @@ const Notes = () => {
   const [isMounted, setIsMounted] = useState(false);
   const { notes, loading, error } = fetchNotes();
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -18,13 +20,17 @@ const Notes = () => {
     return null;
   }
 
+  const handleModal = () => {
+    setIsModalOpen(!isModalOpen);
+  };
+
   return (
     <div>
       {token ? (
         <>
           <div className="flex flex-row justify-between px-20 items-center mt-[8rem]">
             <h1 className="text-[2rem]">Your Notes</h1>
-            <button className="flex p-4 rounded-xl bg-blue-700 text-white">
+            <button className="flex p-4 rounded-xl bg-blue-700 text-white" onClick={handleModal}>
               Add a new note
             </button>
           </div>
@@ -50,7 +56,7 @@ const Notes = () => {
         </div>
       )}
 
-      <NoteModal/>
+       {isModalOpen && <NoteModal onClose={handleModal}/>}
     </div>
   );
 };
