@@ -34,7 +34,7 @@ const Notes = () => {
               <p>Error: {error}</p>
             ) : (
               notes.map(note => (
-                <NotesCard key = {note.id} title = {note.title} description = {note.description} />
+                <NotesCard key = {note.id} id = {note.id} title = {note.title} description = {note.description} />
               ))
             )}
           </div>

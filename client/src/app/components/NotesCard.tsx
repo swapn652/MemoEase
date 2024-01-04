@@ -1,11 +1,30 @@
 import React from 'react';
+import useDeleteNote from '../hooks/useDeleteNote';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface NotesCardProps {
+  id: string;
   title: string;
   description: string;
 }
 
-const NotesCard: React.FC<NotesCardProps> = ({ title, description }) => {
+const NotesCard: React.FC<NotesCardProps> = ({ id, title, description }) => {
+  const { deleteNote } = useDeleteNote();
+
+  const handleDeleteNote = async () => {
+    try {
+      const response = await deleteNote(id);
+      if(response.success){
+        toast.success("Note deleted successfully");
+      }else{
+        toast.error("Failed to delete note");
+      }
+    } catch(error) {
+      toast.error("Failed to delete note");
+    }
+  }
+
   return (
     <div className="relative h-[16rem] w-[25rem] border-2 border-black rounded-xl">
       <div className="h-[4rem] bg-blue-700 rounded-tr-xl rounded-tl-xl text-white flex items-center p-4">
@@ -20,10 +39,12 @@ const NotesCard: React.FC<NotesCardProps> = ({ title, description }) => {
         <div className="cursor-pointer">
           Edit
         </div>
-        <div className="cursor-pointer">
+        <div className="cursor-pointer" onClick={handleDeleteNote}>
           Delete
         </div>
       </div>
+
+      <ToastContainer/>
     </div>
   );
 };
