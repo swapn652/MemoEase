@@ -1,0 +1,31 @@
+import React from 'react';
+
+interface NotesCardProps {
+  title: string;
+  description: string;
+}
+
+const NotesCard: React.FC<NotesCardProps> = ({ title, description }) => {
+  return (
+    <div className="relative h-[16rem] w-[25rem] border-2 border-black rounded-xl">
+      <div className="h-[4rem] bg-blue-700 rounded-tr-xl rounded-tl-xl text-white flex items-center p-4">
+        {title}
+      </div>
+
+      <div className="flex items-center p-4">
+        {description}
+      </div>
+
+      <div className="h-[3rem] w-[100%] rounded-br-xl rounded-bl-xl bg-blue-700 text-white absolute bottom-0 flex flex-row items-center justify-center gap-x-8">
+        <div className="cursor-pointer">
+          Edit
+        </div>
+        <div className="cursor-pointer">
+          Delete
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default NotesCard;
