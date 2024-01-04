@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import NotesCard from '../components/NotesCard';
 import { useAuth } from '../context/AuthContext';
 import fetchNotes from '../hooks/fetchNotes';
+import NoteModal from '../components/NoteModal';
 
 const Notes = () => {
   const { token } = useAuth();
@@ -48,6 +49,8 @@ const Notes = () => {
           You aren't signed in, sign in first or create a new account!!!
         </div>
       )}
+
+      <NoteModal/>
     </div>
   );
 };
