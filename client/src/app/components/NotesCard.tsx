@@ -32,12 +32,12 @@ const NotesCard: React.FC<NotesCardProps> = ({ id, title, description }) => {
   }
 
   return (
-    <div className="relative h-[16rem] w-[25rem] border-2 border-black rounded-xl">
+    <div className="relative h-[18rem] w-[25rem] border-2 border-black rounded-xl">
       <div className="h-[4rem] bg-blue-700 rounded-tr-xl rounded-tl-xl text-white flex items-center p-4">
         {title}
       </div>
 
-      <div className="flex items-center p-4">
+      <div className="flex items-center p-4 h-[9rem] my-[1rem] overflow-scroll">
         {description}
       </div>
 
